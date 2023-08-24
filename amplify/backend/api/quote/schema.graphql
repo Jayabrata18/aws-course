@@ -1,0 +1,37 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+# input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+# type Todo @model {
+#   id: ID!
+#   name: String!
+#   description: String
+#   done: Boolean
+#   createdAt: String
+#   updatedAt: String
+# }
+#query - speak to lambda function
+type Query {
+  generateAQuote(input: AWSJSON!): String
+    @auth(rules: [{ allow: public, provider: iam }])
+    @function(name: "generateLambda-${env}")
+}
+
+# public data
+type QuoteAppData 
+  @model   
+  @auth(rules: [{ allow: public, provider: iam, operations: [read] }]) 
+#   @key(name: "byQuote", fields: ["quote"], queryField: "quoteAppTestsByQuote")
+#   @key(name: "byAuthor", fields: ["author"], queryField: "quoteAppTestsByAuthor")
+  {
+  id: ID!
+  queryName: String!
+    # @index(
+    #   name: "queryNameIndex"
+    #   queryField: "quoteAppTestsByQueryName"
+    #   sortKeyFields: ["queryName"]
+    # )
+  quotesGenerated: Int!
+  createdAt: String!
+  updatedAt: String!
+}
